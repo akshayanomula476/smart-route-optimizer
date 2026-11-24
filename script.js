@@ -720,10 +720,7 @@ function drawPerformanceChart(times) {
     canvas.width = width * pixelRatio;
     canvas.height = height * pixelRatio;
 
-    context.setTransform(
-        pixelRatio, 0, 0, pixelRatio, 0, 0
-    );
-
+    context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
     context.clearRect(0, 0, width, height);
 
     const names = [
@@ -731,6 +728,13 @@ function drawPerformanceChart(times) {
         "Greedy",
         "Dynamic Programming",
         "Divide and Conquer"
+    ];
+
+    const colors = [
+        "#f97316",
+        "#22c55e",
+        "#3b82f6",
+        "#a78bfa"
     ];
 
     const paddingLeft = 55;
@@ -742,9 +746,12 @@ function drawPerformanceChart(times) {
     const chartHeight = height - paddingTop - paddingBottom;
 
     const maxTime = Math.max(...times, 0.001);
-    const barWidth = chartWidth / 6;
 
-    // Draw vertical axis
+    // Calculate equal space for all four bars
+    const slotWidth = chartWidth / 4;
+    const barWidth = slotWidth * 0.6;
+
+    // Draw axes
     context.strokeStyle = "#94a3b8";
     context.lineWidth = 1;
 
@@ -754,14 +761,13 @@ function drawPerformanceChart(times) {
     context.lineTo(width - paddingRight, height - paddingBottom);
     context.stroke();
 
-    // Draw horizontal grid lines
+    // Draw grid lines
     context.font = "11px Arial";
     context.fillStyle = "#94a3b8";
 
     for (let i = 0; i <= 4; i++) {
 
         const y = paddingTop + (chartHeight / 4) * i;
-
         const value = maxTime * (1 - i / 4);
 
         context.strokeStyle = "#334155";
@@ -774,18 +780,12 @@ function drawPerformanceChart(times) {
         context.fillText(value.toFixed(3), paddingLeft - 8, y + 4);
     }
 
-    const colors = [
-        "#f97316",
-        "#22c55e",
-        "#3b82f6",
-        "#a78bfa"
-    ];
-
-    // Draw bars
+    // Draw all four algorithm bars
     times.forEach((time, index) => {
 
         const x = paddingLeft +
-            (index * 2 + 0.7) * barWidth;
+            index * slotWidth +
+            (slotWidth - barWidth) / 2;
 
         const barHeight = (time / maxTime) * chartHeight;
 
@@ -800,6 +800,7 @@ function drawPerformanceChart(times) {
             Math.max(barHeight, 2)
         );
 
+        // Display execution time
         context.fillStyle = "#ffffff";
         context.textAlign = "center";
         context.font = "11px Arial";
@@ -810,6 +811,7 @@ function drawPerformanceChart(times) {
             Math.max(y - 7, 15)
         );
 
+        // Display algorithm name
         context.save();
 
         context.translate(
@@ -817,7 +819,7 @@ function drawPerformanceChart(times) {
             height - paddingBottom + 15
         );
 
-        context.rotate(-0.35);
+        context.rotate(-0.25);
 
         context.textAlign = "right";
         context.fillStyle = "#cbd5e1";
@@ -826,29 +828,4 @@ function drawPerformanceChart(times) {
 
         context.restore();
     });
-}
-
-
-// ========================================
-// 10. LOAD SAMPLE INPUT
-// ========================================
-
-function loadSample() {
-
-    document.getElementById("start").value = "A";
-
-    document.getElementById("end").value = "F";
-
-    document.getElementById("roads").value =
-`A,B,4
-A,C,2
-B,D,5
-C,D,2
-D,F,3
-B,F,10
-C,F,8`;
-
-    document.getElementById("error").textContent = "";
-
-    document.getElementById("results").innerHTML = "";
 }
